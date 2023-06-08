@@ -25,6 +25,8 @@ async function run() {
     // const yogaCollection = client.db("summer-camp-school").collection("yoga");
     const popularClassCollection = client.db("summer-camp-school").collection("popular-Class");
     const popularInstructorCollection = client.db("summer-camp-school").collection("popular-instructor");
+    const instructorsCollection = client.db("summer-camp-school").collection("instructors");
+    const classesCollection = client.db("summer-camp-school").collection("classes");
     
     app.get('/popularClass', async(req,res)=>{
       const query={};
@@ -38,6 +40,15 @@ async function run() {
 
     app.get('/popularInstructor', async(req,res)=>{
         const result= await popularInstructorCollection.find().toArray();
+        res.send(result)
+    })
+    
+    app.get('/instructors', async(req,res)=>{
+        const result= await instructorsCollection.find().toArray();
+        res.send(result)
+    })
+    app.get('/classes', async(req,res)=>{
+        const result= await classesCollection.find().toArray();
         res.send(result)
     })
 
