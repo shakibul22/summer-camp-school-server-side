@@ -28,7 +28,15 @@ async function run() {
     const instructorsCollection = client.db("summer-camp-school").collection("instructors");
     const classesCollection = client.db("summer-camp-school").collection("classes");
     const cartsCollection = client.db("summer-camp-school").collection("carts");
+    const usersCollection = client.db("summer-camp-school").collection("users");
     
+
+    app.post('/users', async (req, res) => {
+      const item = req.body;
+      const result = await usersCollection.insertOne(item);
+      res.send(result);
+    })
+
     app.get('/popularClass', async(req,res)=>{
       const query={};
       const options={
