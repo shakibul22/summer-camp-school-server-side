@@ -186,6 +186,11 @@ async function run() {
         const result= await classesCollection.find().toArray();
         res.send(result)
     })
+    app.post('/classes', async (req, res) => {
+      const item = req.body;
+      const result = await classesCollection.insertOne(item);
+      res.send(result);
+    })
 
      // cart collection apis
      app.get('/carts',  verifyJWT,  async (req, res) => {
