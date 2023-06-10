@@ -30,12 +30,45 @@ async function run() {
     const cartsCollection = client.db("summer-camp-school").collection("carts");
     const usersCollection = client.db("summer-camp-school").collection("users");
     
-
-    app.post('/users', async (req, res) => {
-      const item = req.body;
-      const result = await usersCollection.insertOne(item);
+    //  users related apis
+     app.get('/users',  async (req, res) => {
+      const result = await usersCollection.find().toArray();
       res.send(result);
+    });
+    app.post('/users', async (req, res) => {
+      try {
+        const user = req.body;
+        const query = { email: user.email };
+        const existingUser = await usersCollection.findOne(query);
+    
+        if (existingUser) {
+          return res.send({ message: 'user already exists' });
+        }
+    
+        const result = await usersCollection.insertOne(user);
+        res.status(201).send(result);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'An error occurred' });
+      }
+    });
+    
+
+    app.patch('/users/admin/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log(id);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        },
+      };
+
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
     })
+
 
     app.get('/popularClass', async(req,res)=>{
       const query={};
