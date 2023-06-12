@@ -36,7 +36,7 @@ const client = new MongoClient(uri, { serverApi: { version: ServerApiVersion.v1,
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
 
     // const yogaCollection = client.db("summer-camp-school").collection("yoga");
@@ -221,7 +221,7 @@ async function run() {
       const result = await classesCollection.find().toArray();
       res.send(result)
     })
-    app.post('/classes', verifyJWT, async (req, res) => {
+    app.post('/classes', verifyJWT, verifyInstructor, async (req, res) => {
       const newClass = req.body;
       newClass.status = 'pending'
       const result = await classesCollection.insertOne(item);
@@ -287,7 +287,7 @@ async function run() {
 
     app.get('/admin-stats', verifyJWT, verifyAdmin, async (req, res) => {
       const users = await usersCollection.estimatedDocumentCount();
-      const products = await menuCollection.estimatedDocumentCount();
+      const products = await classesCollection.estimatedDocumentCount();
       const orders = await paymentCollection.estimatedDocumentCount();
 
       const payments = await paymentCollection.find().toArray();
@@ -306,20 +306,20 @@ async function run() {
       const pipeline = [
         {
           $lookup: {
-            from: 'menu',
-            localField: 'menuItems',
+            from: 'classes',
+            localField: 'classesItems',
             foreignField: '_id',
-            as: 'menuItemsData'
+            as: 'classesItemsData'
           }
         },
         {
-          $unwind: '$menuItemsData'
+          $unwind: '$classesItemsData'
         },
         {
           $group: {
-            _id: '$menuItemsData.category',
+            _id: '$classesItemsData.category',
             count: { $sum: 1 },
-            total: { $sum: '$menuItemsData.price' }
+            total: { $sum: '$classesItemsData.price' }
           }
         },
         {
